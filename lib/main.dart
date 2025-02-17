@@ -12,7 +12,9 @@ class AppTheme extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(),
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.blueGrey,
+      ),
       initialRoute: '/',
       routes: {
         '/': (context) => AuthPage(),

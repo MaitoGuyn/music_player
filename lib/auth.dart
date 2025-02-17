@@ -11,16 +11,31 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.cyan,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('images/logo.png'),
+            Text("Вход",textScaler: TextScaler.linear(3),),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.85,
+              child: TextField(
+                cursorColor: Colors.white,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide:BorderSide(color: Colors.white)
+                  ),
+                  enabledBorder: OutlineInputBorder()
+                ),
+              ),
+            ),
+
+          ],
+        ),
       ),
-      body: Container(
-        color: Colors.white,
-      ),
-      bottomNavigationBar: BottomAppBar(),
-      drawer: Drawer(),
-      endDrawer: Drawer(),
-      floatingActionButton: FloatingActionButton(onPressed: (){}),
     );
   }
 }
