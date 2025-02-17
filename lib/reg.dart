@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class AuthPage extends StatefulWidget {
-  const AuthPage({super.key});
+class RegPage extends StatefulWidget {
+  const RegPage({super.key});
 
   @override
-  State<AuthPage> createState() => _AuthPageState();
+  State<RegPage> createState() => _RegPageState();
 }
 
-class _AuthPageState extends State<AuthPage> {
+class _RegPageState extends State<RegPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,7 +16,7 @@ class _AuthPageState extends State<AuthPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('images/logo.png'),
-            Text("Вход",textScaler: TextScaler.linear(3),),
+            Text("Регистрация",textScaler: TextScaler.linear(3),),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.85,
               child: TextField(
@@ -52,16 +52,6 @@ class _AuthPageState extends State<AuthPage> {
                 ),
               ),
             ),
-            
-            Container(
-              alignment: Alignment.centerRight,
-              child: InkWell(
-                child: Text("Забыли пароль?"),
-                onTap: () {
-                  
-                },
-              )
-              ),
 
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.015,
@@ -69,21 +59,20 @@ class _AuthPageState extends State<AuthPage> {
 
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.6,
-              child: ElevatedButton(onPressed: (){}, child: Text("Войти",
+              child: ElevatedButton(onPressed: (){}, child: Text("Создать аккаунт",
                 style: TextStyle(color: Colors.black)
-              ),),
-            ),
-
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.015,
-            ),
-
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.6,
-              child: OutlinedButton(onPressed: (){}, child: Text("Создать аккаунт",
-                 style: TextStyle(color: Colors.white)
                 ),
               ),
+            ),
+
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.015,
+            ),
+
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: OutlinedButton(onPressed: (){}, child: Text("Войти",
+              style: TextStyle(color: Colors.white)),),
             )
 
           ],
