@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:music_player/RecoveryPage.dart';
+import 'package:music_player/TrackListPage.dart';
+import 'package:music_player/reg.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -58,7 +61,7 @@ class _AuthPageState extends State<AuthPage> {
               child: InkWell(
                 child: Text("Забыли пароль?"),
                 onTap: () {
-                  
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => RecoveryPage()));
                 },
               )
               ),
@@ -69,8 +72,15 @@ class _AuthPageState extends State<AuthPage> {
 
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.6,
-              child: ElevatedButton(onPressed: (){}, child: Text("Войти",
-                style: TextStyle(color: Colors.black)
+              child: ElevatedButton(onPressed: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TrackListPage()),
+                  );
+              },
+               child: Text("Войти",
+               style: TextStyle(color: Colors.black),
+              
               ),),
             ),
 
@@ -80,7 +90,11 @@ class _AuthPageState extends State<AuthPage> {
 
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.6,
-              child: OutlinedButton(onPressed: (){}, child: Text("Создать аккаунт",
+              child: OutlinedButton(onPressed: (){
+                Navigator.push(context, 
+                MaterialPageRoute(builder: (context) => RegPage())
+                );
+              }, child: Text("Создать аккаунт",
                  style: TextStyle(color: Colors.white)
                 ),
               ),

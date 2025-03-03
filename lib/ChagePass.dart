@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:music_player/TrackListPage.dart';
 import 'package:music_player/auth.dart';
 
-class RegPage extends StatefulWidget {
-  const RegPage({super.key});
+class ChangePassPage extends StatefulWidget {
+  const ChangePassPage({super.key});
 
   @override
-  State<RegPage> createState() => _RegPageState();
+  State<ChangePassPage> createState() => _ChangePassPageState();
 }
 
-class _RegPageState extends State<RegPage> {
+class _ChangePassPageState extends State<ChangePassPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,15 +16,13 @@ class _RegPageState extends State<RegPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('images/logo.png'),
-            Text("Регистрация",textScaler: TextScaler.linear(3),),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.85,
               child: TextField(
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.email, color: Colors.white),
-                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.password, color: Colors.white),
+                  labelText: 'Write password',
                   labelStyle: TextStyle(color: Colors.white),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -44,7 +41,7 @@ class _RegPageState extends State<RegPage> {
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.password, color: Colors.white),
-                  labelText: 'Password',
+                  labelText: 'Write the password a second time',
                   labelStyle: TextStyle(color: Colors.white),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -62,25 +59,12 @@ class _RegPageState extends State<RegPage> {
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.6,
               child: ElevatedButton(onPressed: (){
-                Navigator.push(context,MaterialPageRoute(builder: (context) => TrackListPage()));
-              }, child: Text("Создать аккаунт",
+                Navigator.push(context,MaterialPageRoute(builder: (context) => AuthPage()));
+              }, child: Text("Изменить пароль",
                 style: TextStyle(color: Colors.black)
                 ),
               ),
             ),
-
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.015,
-            ),
-
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.6,
-              child: OutlinedButton(onPressed: (){
-                Navigator.push(context,
-                MaterialPageRoute(builder: (context) => AuthPage()));
-              }, child: Text("Войти",
-              style: TextStyle(color: Colors.white)),),
-            )
 
           ],
           

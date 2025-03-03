@@ -40,7 +40,7 @@ class AppTheme extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => TrackListPage(),
+        '/': (context) => AuthPage(),
       },
     );
   }

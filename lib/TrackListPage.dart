@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_player/AuthorPage.dart';
 
 class TrackListPage extends StatefulWidget {
   const TrackListPage({super.key});
@@ -161,7 +162,16 @@ final List<Map<String, String>> tracks = [
                               color: Colors.white.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(50),
                             ),
-                            child: const Icon(Icons.person, color: Colors.white, size: 40),
+                            child: IconButton(
+                              onPressed: () {
+                                Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => AuthorPage()));
+                              },
+                              icon: Icon(
+                                Icons.person,
+                                color: Colors.white,
+                              ),
+                  ),
                           ),
                           const SizedBox(height: 5),
                           Text(

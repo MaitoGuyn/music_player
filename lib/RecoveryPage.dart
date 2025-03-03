@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_player/ChagePass.dart';
 
 class RecoveryPage extends StatelessWidget {
   const RecoveryPage({super.key});
@@ -30,6 +31,41 @@ class RecoveryPage extends StatelessWidget {
                     ),
                   ),
                   labelText: 'Email',
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(color: Colors.white)),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.015,
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.85,
+              child: TextField(
+                cursorColor: Colors.white,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.code,
+                    color: Colors.white,
+                  ),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ChangePassPage()));
+                    },
+                    icon: Icon(
+                      Icons.send,
+                      color: Colors.white,
+                    ),
+                  ),
+                  labelText: 'Code',
                   labelStyle: TextStyle(color: Colors.white),
                   focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
