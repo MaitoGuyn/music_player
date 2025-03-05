@@ -86,35 +86,18 @@ class _AuthorPageState extends State<AuthorPage>{
 
                SizedBox(height: 10),
               ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
                 itemCount: tracks.length,
-                itemBuilder: (context, index) {
+                itemBuilder: (BuildContext context, int index){
                   final track = tracks[index];
-                  return ListTile(
-                    leading: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.music_note, color: Colors.white),
-                    ),
-                    title: Text(
-                      track['title']!,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    subtitle: Text(
-                      track['author']!,
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                    //onTap: () => Navigator.push(
-                     // context//,
-                     // MaterialPageRoute(builder: (context) => TracksPage()),
-                   // ),
+                  return Container(
+                    width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(50),
+                            ),
                   );
-                },
+                }
               ),
 
             ],

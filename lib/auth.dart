@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:music_player/RecoveryPage.dart';
 import 'package:music_player/TrackListPage.dart';
+import 'package:music_player/database/auth.dart';
 import 'package:music_player/reg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -11,6 +13,9 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passController = TextEditingController();
+  AuthServise authServise = AuthServise();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,6 +28,7 @@ class _AuthPageState extends State<AuthPage> {
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.85,
               child: TextField(
+                controller: emailController,
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.email, color: Colors.white),
@@ -42,6 +48,7 @@ class _AuthPageState extends State<AuthPage> {
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.85,
               child: TextField(
+                controller: passController,
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.password, color: Colors.white),
@@ -72,11 +79,26 @@ class _AuthPageState extends State<AuthPage> {
 
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.6,
-              child: ElevatedButton(onPressed: (){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const TrackListPage()),
-                  );
+              child: ElevatedButton(onPressed: () async{
+               // Navigator.push(
+                 // context,
+                //  MaterialPageRoute(builder: (context) => const TrackListPage()),
+                 // );
+                if(emailController.text.isEmpty || passController.text.isEmpty){
+                  print("Поля пустые!");
+
+                }
+                else{
+                  var user = await authServise.signIn(emailController.text, passController.text);
+                  if(user!= null){
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool('isLoggedIn', true);
+                  Navigator.popAndPushNamed(context, '/');
+                  }
+                  else{
+                    print("Пароль не найден!");
+                  }
+                }
               },
                child: Text("Войти",
                style: TextStyle(color: Colors.black),
