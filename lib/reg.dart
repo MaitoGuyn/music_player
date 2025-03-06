@@ -103,6 +103,7 @@ class _RegPageState extends State<RegPage> {
                         final prefs = await SharedPreferences.getInstance();
                         await prefs.setBool('isLoggedIn', true);
                         Navigator.popAndPushNamed(context, '/');
+                        print("Пользователь создан!");
                       }else{
                         print("Пользователь не создан!");
                       }

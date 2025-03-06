@@ -16,17 +16,16 @@ class AuthServise{
     }
   }
 
-  Future<LocalUser?> signUp( String email , String password)async {
-    try{
-      var userGet = await _supabase.client.auth.signUp(password: password, email: email);
-
-      User user = userGet.user!;
-      return LocalUser.fromSupabase(user);
-    }
-    catch(e){
-      return null;
-    }
+  Future<LocalUser?> signUp(String email, String password) async {
+  try {
+    var userGet = await _supabase.client.auth.signUp(password: password, email: email);
+    User user = userGet.user!;
+    return LocalUser.fromSupabase(user);
+  } catch (e) {
+    print("Ошибка при регистрации: $e"); // Вывод ошибки в консоль
+    return null;
   }
+}
 
   Future<void> logOut()async{
     try{

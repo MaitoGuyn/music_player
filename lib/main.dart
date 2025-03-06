@@ -8,7 +8,15 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:music_player/TrackListPage.dart';
 
-void main() {
+void main() async  {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Инициализация Supabase
+  await Supabase.initialize(
+    url: 'https://avlhfundbxtouuguzldi.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bGhmdW5kYnh0b3V1Z3V6bGRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzODA5MDAsImV4cCI6MjA1NTk1NjkwMH0.MTEnVOd6cZkMtSA6KuWuzLEypwAng_GvTg7Nku1GAYI',
+  );
+
   runApp(const AppTheme());
 }
 
@@ -42,6 +50,7 @@ class AppTheme extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => LandingPage(),
+        '/Track': (context) => TrackListPage(),
         '/auth': (context) => AuthPage(),
         '/reg': (context) => RegPage(),
         '/recovery': (context) => RecoveryPage(),

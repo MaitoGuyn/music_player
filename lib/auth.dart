@@ -93,7 +93,7 @@ class _AuthPageState extends State<AuthPage> {
                   if(user!= null){
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.setBool('isLoggedIn', true);
-                  Navigator.popAndPushNamed(context, '/');
+                  Navigator.popAndPushNamed(context, '/Track');
                   }
                   else{
                     print("Пароль не найден!");
