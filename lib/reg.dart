@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:music_player/TrackListPage.dart';
 import 'package:music_player/auth.dart';
 import 'package:music_player/database/auth.dart';
+import 'package:music_player/database/user_table.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RegPage extends StatefulWidget {
@@ -15,7 +16,9 @@ class _RegPageState extends State<RegPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
   TextEditingController RepeatpassController = TextEditingController();
+  TextEditingController Nick = TextEditingController();
   AuthServise authServise = AuthServise();
+  UserTable _table =  UserTable();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +28,26 @@ class _RegPageState extends State<RegPage> {
           children: [
             Image.asset('images/logo.png'),
             Text("Регистрация",textScaler: TextScaler.linear(3),),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.85,
+              child: TextField(
+                controller: Nick,
+                cursorColor: Colors.white,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.email, color: Colors.white),
+                  labelText: 'Nick Name',
+                  labelStyle: TextStyle(color: Colors.white),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide:BorderSide(color: Colors.white)
+                  ),
+                  enabledBorder: OutlineInputBorder()
+                ),
+              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.015,
+            ),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.85,
               child: TextField(
@@ -100,6 +123,7 @@ class _RegPageState extends State<RegPage> {
                    if(passController.text == RepeatpassController.text){
                       var user = await authServise.signUp(emailController.text, passController.text);
                       if(user!= null){
+                        await _table.addUser(Nick.text, emailController.text, passController.text);
                         final prefs = await SharedPreferences.getInstance();
                         await prefs.setBool('isLoggedIn', true);
                         Navigator.popAndPushNamed(context, '/');

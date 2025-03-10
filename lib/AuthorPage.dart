@@ -31,18 +31,26 @@ class _AuthorPageState extends State<AuthorPage>{
         child: Column(
             children: [
                SizedBox(
-                width: 250,
-                height: 250,
-                child: Container(
+                width: 350,
+                height: 350,
+                child: Padding(padding:EdgeInsets.all(40),
+                   child: Container(
                   decoration:  BoxDecoration(
                   color: Colors.white ,
-                  borderRadius:  BorderRadius.circular(10),
+                  borderRadius:  BorderRadius.circular(5),
                   border: Border.all(color: Colors.black , width: 2)
                    ),
-                ) 
+                ),
+                )
+               
+               
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.05,
         ),
         SizedBox(
                 height: 130,
+                
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -84,21 +92,34 @@ class _AuthorPageState extends State<AuthorPage>{
                 ),
               ),
 
-               SizedBox(height: 10),
-              ListView.builder(
-                itemCount: tracks.length,
-                itemBuilder: (BuildContext context, int index){
-                  final track = tracks[index];
-                  return Container(
-                    width: 70,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                  );
-                }
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.02,
               ),
+
+              SizedBox(
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: tracks.length,
+                  itemBuilder: (BuildContext context, int index){
+                    final track = tracks[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child:  Container(
+                        width: 70,
+                                height: 70,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                        child: Icon(
+                          Icons.art_track
+                        )
+                      ),
+                      
+                    );
+                  }
+                ),
+              )
 
             ],
         )

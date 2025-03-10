@@ -238,63 +238,14 @@ final List<Map<String, String>> tracks = [
       ),
 
       // Плеер внизу
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.blueGrey.shade700,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListTile(
+          leading: Icon(Icons.music_note),
+          title: Text('----------------------'),
+          subtitle:  Text('Название'),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.music_note, color: Colors.white),
-                ),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      tracks[currentTrackIndex]['title']!,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      tracks[currentTrackIndex]['author']!,
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: Icon(
-                    isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
-                    color: Colors.white,
-                    size: 40,
-                  ),
-                  onPressed: () => setState(() => isPlaying = !isPlaying),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            LinearProgressIndicator(
-              value: 0.3,
-              backgroundColor: Colors.white.withOpacity(0.3),
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          ],
-        ),
-      ),
+      )
       backgroundColor: Colors.blueGrey.shade900,
     );
   }
