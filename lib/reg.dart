@@ -116,7 +116,9 @@ class _RegPageState extends State<RegPage> {
               child: ElevatedButton(onPressed: ()async{
                 //Navigator.push(context,MaterialPageRoute(builder: (context) => TrackListPage()));
                 if(emailController.text.isEmpty || passController.text.isEmpty || RepeatpassController.text.isEmpty){
-                 print("Поля пустые!");
+                 ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Поля пустые", style: TextStyle(color: Colors.black)),
+                    backgroundColor: Colors.white,));
                 }
                 else{
                   
@@ -127,12 +129,20 @@ class _RegPageState extends State<RegPage> {
                         final prefs = await SharedPreferences.getInstance();
                         await prefs.setBool('isLoggedIn', true);
                         Navigator.popAndPushNamed(context, '/');
-                        print("Пользователь создан!");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Зерегистрирован: ${user.email!}", style: TextStyle(color: Colors.black)),
+                        backgroundColor: Colors.white));
                       }else{
-                        print("Пользователь не создан!");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Не зарегестирован", style: TextStyle(color: Colors.black)),
+                          backgroundColor: Colors.white,),
+                        );
                       }
                   }else{
-                    print("Пароли не совпадают");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Пароли не совпадают", style: TextStyle(color: Colors.black)),
+                    backgroundColor: Colors.white,),
+                  );
                   }
                 }
               }, child: Text("Создать аккаунт",

@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:music_player/AuthorPage.dart';
+import 'package:music_player/players.dart';
 
 class TrackListPage extends StatefulWidget {
   const TrackListPage({super.key});
@@ -244,9 +246,16 @@ final List<Map<String, String>> tracks = [
           leading: Icon(Icons.music_note),
           title: Text('----------------------'),
           subtitle:  Text('Название'),
+          trailing: IconButton(
+            onPressed: () {
+              Navigator.push(context,
+                             CupertinoPageRoute(builder: (context) => PlayersPage()));
+            },
+            icon: Icon(Icons.play_arrow)
+          ),
         ),
       )
-      backgroundColor: Colors.blueGrey.shade900,
+      
     );
   }
 }

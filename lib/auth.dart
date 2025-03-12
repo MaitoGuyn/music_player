@@ -85,18 +85,28 @@ class _AuthPageState extends State<AuthPage> {
                 //  MaterialPageRoute(builder: (context) => const TrackListPage()),
                  // );
                 if(emailController.text.isEmpty || passController.text.isEmpty){
-                  print("Поля пустые!");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Поля пустые", style: TextStyle(color: Colors.black)),
+                    backgroundColor: Colors.white,),
+                  );
 
                 }
                 else{
                   var user = await authServise.signIn(emailController.text, passController.text);
                   if(user!= null){
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.setBool('isLoggedIn', true);
-                  Navigator.popAndPushNamed(context, '/Track');
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool('isLoggedIn', true);
+                    Navigator.popAndPushNamed(context, '/Track');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Авторизирован: ${user.email!}", style: TextStyle(color: Colors.black)),
+                    backgroundColor: Colors.white,)
+                  );
                   }
                   else{
-                    print("Пароль не найден!");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Пользователь не найден", style: TextStyle(color: Colors.black)),
+                    backgroundColor: Colors.white,),
+                  );
                   }
                 }
               },

@@ -104,18 +104,34 @@ class _AuthorPageState extends State<AuthorPage>{
                     final track = tracks[index];
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child:  Container(
+                      child: Column(
+                        children: [
+                          Container(
                         width: 70,
                                 height: 70,
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(50),
                                 ),
-                        child: Icon(
-                          Icons.art_track
-                        )
+                        child: IconButton(
+                              onPressed: () {
+                                Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => AuthorPage()));
+                              },
+                              icon: Icon(
+                                Icons.track_changes,
+                                color: Colors.white,
+                              ),
                       ),
-                      
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                            track['name']!,
+                            style: const TextStyle(color: Colors.white),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ]
+                    )
                     );
                   }
                 ),

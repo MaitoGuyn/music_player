@@ -45,6 +45,10 @@ class AppTheme extends StatelessWidget {
         ),
         textTheme: TextTheme(
           bodyMedium: TextStyle(color: Colors.white)
+        ),
+        listTileTheme: ListTileThemeData(
+          textColor: Colors.white,
+          iconColor: Colors.white,
         )
       ),
       initialRoute: '/',
