@@ -1,7 +1,9 @@
+import 'package:cache_audio_player_plus/cache_audio_player_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:music_player/AuthorPage.dart';
 import 'package:music_player/players.dart';
+
 
 class TrackListPage extends StatefulWidget {
   const TrackListPage({super.key});
@@ -49,6 +51,7 @@ final List<Map<String, String>> tracks = [
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Список треков'),
@@ -248,8 +251,17 @@ final List<Map<String, String>> tracks = [
           subtitle:  Text('Название'),
           trailing: IconButton(
             onPressed: () {
-              Navigator.push(context,
-                             CupertinoPageRoute(builder: (context) => PlayersPage()));
+              bool State = false;
+              final CacheAudioPlayerPlus  player = CacheAudioPlayerPlus();
+              player.playerNetworkAudio(url: "https://drive.google.com/file/d/1N2njgCeLudLNVM9HDTrK9cIr5wxz34aZ/view", cache: true);
+              player.dispose();
+              if(State == false){
+                player.resume();
+                State = true;
+              }
+              else if(State == true){
+                  player.pause();
+              }
             },
             icon: Icon(Icons.play_arrow)
           ),
