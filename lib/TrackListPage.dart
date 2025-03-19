@@ -53,11 +53,22 @@ final List<Map<String, String>> tracks = [
   Widget build(BuildContext context) {
     
     return Scaffold(
+      
       appBar: AppBar(
         title: const Text('Список треков'),
         backgroundColor: Colors.blueGrey,
+        
       ),
-      body: SingleChildScrollView(
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue, Colors.blueGrey],
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.only(bottom: 80), // Отступ для нижнего плеера
           child: Column(
@@ -251,17 +262,14 @@ final List<Map<String, String>> tracks = [
           subtitle:  Text('Название'),
           trailing: IconButton(
             onPressed: () {
-              bool State = false;
-              final CacheAudioPlayerPlus  player = CacheAudioPlayerPlus();
-              player.playerNetworkAudio(url: "https://drive.google.com/file/d/1N2njgCeLudLNVM9HDTrK9cIr5wxz34aZ/view", cache: true);
-              player.dispose();
-              if(State == false){
-                player.resume();
-                State = true;
-              }
-              else if(State == true){
-                  player.pause();
-              }
+                Navigator.push(context, CupertinoPageRoute(
+                  builder: (context) => PlayerPage(
+                    nameSound: 'Тынларсынмы Яшьлек Хислэремне',
+                    author: 'Гио Пика',
+                    urlMusic: 'https://avlhfundbxtouuguzldi.supabase.co/storage/v1/object/public/storages//Ilkham_SHakirov_-_Tynlarsynmy_YAshlek_KHisljeremne_71715814.mp3',
+                    urlPhoto: 'https://avlhfundbxtouuguzldi.supabase.co/storage/v1/object/public/storages//Ilkham_Shakirov_picture.png',
+                  ),
+                ));
             },
             icon: Icon(Icons.play_arrow)
           ),

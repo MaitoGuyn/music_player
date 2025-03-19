@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_player/AuthorPage.dart';
 import 'package:music_player/auth.dart';
 import 'package:music_player/landing.dart';
 import 'package:music_player/reg.dart';
@@ -26,8 +27,14 @@ class AppTheme extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          iconTheme: IconThemeData(
+            color: Colors.white
+          )
+        ),
         scaffoldBackgroundColor: Colors.blueGrey,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
@@ -53,7 +60,7 @@ class AppTheme extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => TrackListPage(),
+        '/': (context) => AuthorPage(),
         '/Track': (context) => TrackListPage(),
         '/auth': (context) => AuthPage(),
         '/reg': (context) => RegPage(),
