@@ -274,7 +274,8 @@ final List<Map<String, String>> tracks = [
             icon: Icon(Icons.play_arrow)
           ),
         ),
-      )
+      ),
+      drawer: DrawerPage(),
       
     );
   }

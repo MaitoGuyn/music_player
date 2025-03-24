@@ -10,12 +10,22 @@ class DrawerPage extends StatefulWidget {
 }
 
 class _DrawerPageState extends State<DrawerPage> {
-  final String user_if = Supabase.instance.client.auth.currentUser!.id.toString();
-  dynamic doc;
+  AuthService authservise = AuthService();
+  final String user_id = Supabase.instance.client.auth.currentUser!.id.toString();
+  dynamic docs;
   getUserById()async{
-    final userGet = await Superbase.instance.client.from('users').select()
+    final userGet = await Superbase.instance.client.from('users').select().eq('id',id.toString());
+    setState(){
+      docs = userGet;
+    }
   }
   @override
+
+  void initState(){
+    getUserById();
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
