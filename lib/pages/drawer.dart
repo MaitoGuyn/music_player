@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:music_player/database/auth.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DrawerPage extends StatefulWidget {
@@ -10,21 +12,22 @@ class DrawerPage extends StatefulWidget {
 }
 
 class _DrawerPageState extends State<DrawerPage> {
-  AuthService authservise = AuthService();
-  final String user_id = Supabase.instance.client.auth.currentUser!.id.toString();
-  dynamic docs;
-  getUserById()async{
-    final userGet = await Superbase.instance.client.from('users').select().eq('id',id.toString());
-    setState(){
-      docs = userGet;
-    }
-  }
+  // AuthServise auth = new AuthServise();
+  // final String user_id = Supabase.instance.client.auth.currentUser!.id.toString();
+  // dynamic docs;
+  // getUserById()async{
+  //   final userGet = await Supabase.instance.client.from('users').select().eq('id', user_id).single();
+
+  //   setState(() {
+  //     docs = userGet;
+  //   });
+  // }
   @override
 
-  void initState(){
-    getUserById();
-    super.initState();
-  }
+  // void initState(){
+  //   getUserById();
+  //   super.initState();
+  // }
 
   Widget build(BuildContext context) {
     return Drawer(
@@ -40,14 +43,14 @@ class _DrawerPageState extends State<DrawerPage> {
         ),
       child: ListView(
         children: [
-            DrawerHeader(child: UserAccountsDrawerHeader(accountName: Text(docs['name'])
-            , accountEmail: Text(docs['email']),
+            DrawerHeader(child: UserAccountsDrawerHeader(accountName: Text('name')//docs['name'])
+            , accountEmail: Text(''),//docs['email']),
             currentAccountPicture: Container(
               alignment: Alignment.topCenter,
               child: CircleAvatar(
                 maxRadius: 20,
                 minRadius: 10,
-                backgroundImage: NetworkImage(docs['avatar']),
+                // backgroundImage: NetworkImage(docs['avatar']),
               ),
             ),
             otherAccountsPictures: [

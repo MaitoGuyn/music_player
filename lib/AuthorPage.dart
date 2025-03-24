@@ -50,10 +50,17 @@ class _AuthorPageState extends State<AuthorPage>{
                 alignment: Alignment.topLeft,
                 child: Column(
                   children: [
-                    ElevatedButton(onPressed: () {}, child: const Text('Tracks')),
-                    ElevatedButton(onPressed: () {}, child: const Text('Enabled')),
-                    ElevatedButton(onPressed: () {}, child: const Text('Enabled')),
-                    ElevatedButton(onPressed: () {}, child: const Text('Enabled')),
+                    SizedBox(
+              width: MediaQuery.of(context).size.width * 0.2,
+                    child: Padding(padding: EdgeInsets.all(20),
+                    child: ElevatedButton(onPressed: () {}, child: const Text('Треки'))),
+                    ),
+                    Padding(padding: EdgeInsets.all(20),
+                    child: ElevatedButton(onPressed: () {}, child: const Text('Плейлисты'))),
+                    Padding(padding: EdgeInsets.all(20),
+                    child: ElevatedButton(onPressed: () {}, child: const Text('Enabled'))),
+                    Padding(padding: EdgeInsets.all(20),
+                    child: ElevatedButton(onPressed: () {}, child: const Text('Выйти')))
                   ],
                 )
                  
@@ -74,28 +81,32 @@ class _AuthorPageState extends State<AuthorPage>{
                   ),
                   )
                 )),
-    
-                Text(
-                'Author',
-                style: TextStyle(   // зеленый цвет текста
-                fontSize: 26),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.01,
-              ),
-              Text(
-                'Email',
-                style: TextStyle(   // зеленый цвет текста
-                fontSize: 26),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.01,
-              ),
-              Text(
-                'Любимый исполнитель:',
-                style: TextStyle(   // зеленый цвет текста
-                fontSize: 26),
-              ),
+              Column(
+                children: [
+                  Text(
+                  'Login',
+                  style: TextStyle(   // зеленый цвет текста
+                  fontSize: 26),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  Text(
+                    'Email',
+                    style: TextStyle(   // зеленый цвет текста
+                    fontSize: 26),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  Text(
+                    'Любимый исполнитель:',
+                    style: TextStyle(   // зеленый цвет текста
+                    fontSize: 26),
+                  ),
+                ]
+              )
+                
                
           ]
         ),
@@ -126,99 +137,7 @@ class _AuthorPageState extends State<AuthorPage>{
           ),
         ),
 
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.02,
-        ),
-        SizedBox(
-          height: 130,  
-          child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  itemCount: alboms.length,
-                  itemBuilder: (context, index) {
-                    final artist = alboms[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 70,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => AuthorPage()));
-                              },
-                              icon: Icon(
-                                Icons.person,
-                                color: Colors.white,
-                              ),
-                  ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            artist['name']!,
-                            style: const TextStyle(color: Colors.white),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-
-              SizedBox(
-                height: 500,
-                
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  itemCount: alboms.length,
-                  itemBuilder: (context, index) {
-                    final artist = tracks[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 70,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => AuthorPage()));
-                              },
-                              icon: Icon(
-                                Icons.person,
-                                color: Colors.white,
-                              ),
-                  ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            artist['name']!,
-                            style: const TextStyle(color: Colors.white),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
+        
       
           ]
         )
