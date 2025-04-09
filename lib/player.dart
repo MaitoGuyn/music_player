@@ -1,7 +1,8 @@
-// ignore_for_file: must_be_immutable
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:music_player/database/Track.dart';
+import 'package:music_player/database/user_table.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PlayerPage extends StatefulWidget {
   String? urlMusic;
@@ -15,6 +16,29 @@ class PlayerPage extends StatefulWidget {
     this.nameSound,
     this.author,
   });
+
+  static UserTable _userTable = new UserTable();
+
+  static Future<void> playTrack({
+  required BuildContext context,
+  required Track track,
+}) async {
+  // Сначала получаем весь плейлист
+  final playlist = await _userTable.fetchTracks();
+  final initialIndex = playlist.indexWhere((t) => t.id == track.id);
+  
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlayerPage(
+          urlMusic: track.audioUrl,
+          urlPhoto: track.imageUrl,
+          nameSound: track.title,
+          author: track.authorName,
+        ),
+      ),
+    );
+  }
 
   @override
   State<PlayerPage> createState() => _PlayerPageState();
@@ -31,9 +55,13 @@ class _PlayerPageState extends State<PlayerPage> {
   Duration _duration = Duration();
   Duration _position = Duration();
 
+  UserTable _userTable = new UserTable();
+  late List<Track> _playlist;
+  late int _currentTrackIndex;
+
   Future initPlayer() async {
     audioPlayer = AudioPlayer();
-
+  
     /// Сюда с констуктора необходимо закинуть ссылку
     urlSource = UrlSource(_urlMusic!);
 
@@ -59,6 +87,15 @@ class _PlayerPageState extends State<PlayerPage> {
     });
   }
 
+
+  void _initPlaylist(List<Track> playlist, int initialIndex) {
+  setState(() {
+    _playlist = playlist;
+    _currentTrackIndex = initialIndex;
+  });
+}
+
+
   // Для проигрывания и паузы
   void playPause() async {
     if (isPlaying) {
@@ -71,6 +108,72 @@ class _PlayerPageState extends State<PlayerPage> {
     setState(() {});
   }
 
+  
+Future<void> _nextTrack() async {
+  if (_playlist.isEmpty) return;
+  
+  final newIndex = (_currentTrackIndex + 1) % _playlist.length;
+  await _switchTrack(newIndex);
+}
+
+// Метод для переключения на предыдущий трек
+Future<void> _previousTrack() async {
+  if (_playlist.isEmpty) return;
+  
+  // Если прошло больше 3 секунд - в начало текущего трека
+  if (_position.inSeconds > 3) {
+    await audioPlayer.seek(Duration.zero);
+    return;
+  }
+  
+  final newIndex = (_currentTrackIndex - 1) % _playlist.length;
+  await _switchTrack(newIndex);
+}
+
+
+Future<void> _switchTrack(int newIndex) async {
+  if (newIndex < 0 || newIndex >= _playlist.length) return;
+  
+  setState(() {
+    _currentTrackIndex = newIndex;
+    final track = _playlist[newIndex];
+    _urlMusic = track.audioUrl;
+    _urlPhoto = track.imageUrl;
+    _nameSound = track.title;
+    _author = track.authorName;
+    isPlaying = true;
+  });
+  
+  try {
+    await audioPlayer.stop();
+    await audioPlayer.play(UrlSource(_urlMusic!));
+  } catch (e) {
+    print('Ошибка переключения трека: $e');
+    setState(() => isPlaying = false);
+  }
+}
+
+
+void _updateCurrentTrack() {
+  final track = _playlist[_currentTrackIndex];
+  _urlMusic = track.audioUrl;
+  _urlPhoto = track.imageUrl;
+  _nameSound = track.title;
+  _author = track.authorName;
+}
+
+Future<void> _loadPlaylist() async {
+  try {
+    _playlist = await _userTable.fetchTracks(); // Ваш метод
+    if (_playlist.isEmpty) {
+      print('Плейлист пуст');
+    }
+  } catch (e) {
+    print('Ошибка загрузки плейлиста: $e');
+    _playlist = [];
+  }
+}
+
   // Инициализация
   @override
   void initState() {
@@ -78,7 +181,18 @@ class _PlayerPageState extends State<PlayerPage> {
     _urlMusic = widget.urlMusic;
     _author = widget.author;
     _nameSound = widget.nameSound;
+
+    _loadPlaylist().then((_) {
+    // Находим индекс текущего трека в плейлисте
+    if (_playlist.isNotEmpty) {
+      _currentTrackIndex = _playlist.indexWhere(
+        (t) => t.audioUrl == _urlMusic
+      ).clamp(0, _playlist.length - 1);
+    }
+    
+    // Инициализируем плеер после загрузки плейлиста
     initPlayer();
+    });
     super.initState();
   }
 
@@ -166,16 +280,11 @@ class _PlayerPageState extends State<PlayerPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Назад
-                IconButton(
-                  color: Colors.white,
-                  onPressed: () {
-                    audioPlayer.seek(
-                      Duration(seconds: _position.inSeconds - 10),
-                    );
-                    setState(() {});
-                  },
-                  icon: SizedBox(child: Icon(Icons.fast_rewind, size: 60)),
-                ),
+                 IconButton(
+                    icon: Icon(Icons.skip_previous, size: 40),
+                    color: Colors.white,
+                    onPressed: _previousTrack,
+                  ),
                 // Проигрывать
                 IconButton(
                   color: Colors.white,
@@ -187,14 +296,9 @@ class _PlayerPageState extends State<PlayerPage> {
                 ),
                 // Дальше
                 IconButton(
+                  icon: Icon(Icons.skip_next, size: 40),
                   color: Colors.white,
-                  onPressed: () {
-                    audioPlayer.seek(
-                      Duration(seconds: _position.inSeconds + 10),
-                    );
-                    setState(() {});
-                  },
-                  icon: Icon(Icons.fast_forward, size: 60),
+                  onPressed: _nextTrack,
                 ),
               ],
             ),

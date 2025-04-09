@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_player/AuthorPage.dart';
+import 'package:music_player/PlayerManager.dart';
 import 'package:music_player/auth.dart';
 import 'package:music_player/landing.dart';
 import 'package:music_player/reg.dart';
@@ -18,7 +19,12 @@ void main() async  {
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bGhmdW5kYnh0b3V1Z3V6bGRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzODA5MDAsImV4cCI6MjA1NTk1NjkwMH0.MTEnVOd6cZkMtSA6KuWuzLEypwAng_GvTg7Nku1GAYI',
   );
 
-  runApp(const AppTheme());
+   runApp(
+    ChangeNotifierProvider(
+      create: (context) => PlayerManager(),
+      child: const AppTheme(), // Ваш существующий корневой виджет
+    ),
+  );
 }
 
 class AppTheme extends StatelessWidget {
@@ -27,7 +33,6 @@ class AppTheme extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         appBarTheme: AppBarTheme(
@@ -60,7 +65,7 @@ class AppTheme extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => TrackListPage(),
+        '/': (context) => AuthPage(),
         '/Track': (context) => TrackListPage(),
         '/auth': (context) => AuthPage(),
         '/reg': (context) => RegPage(),

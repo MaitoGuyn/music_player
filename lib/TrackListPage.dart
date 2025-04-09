@@ -2,9 +2,15 @@ import 'package:cache_audio_player_plus/cache_audio_player_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:music_player/AuthorPage.dart';
+import 'package:music_player/database/Author.dart';
+import 'package:music_player/database/Track.dart';
+import 'package:music_player/database/play_list.dart';
+import 'package:music_player/database/user_table.dart';
+import 'package:music_player/pages/MiniPlayer.dart';
+import 'package:music_player/pages/PagePlaylist.dart';
 import 'package:music_player/pages/drawer.dart';
-import 'package:music_player/players.dart';
-
+import 'package:music_player/player.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class TrackListPage extends StatefulWidget {
   const TrackListPage({super.key});
@@ -15,41 +21,95 @@ class TrackListPage extends StatefulWidget {
 
 class _TrackListPageState extends State<TrackListPage> {
 
-final List<Map<String, String>> tracks = [
-    {'title': 'Трек 1', 'author': 'Автор 1'},
-    {'title': 'Трек 2', 'author': 'Автор 2'},
-    {'title': 'Трек 3', 'author': 'Автор 3'},
-    {'title': 'Трек 4', 'author': 'Автор 4'},
-    {'title': 'Трек 5', 'author': 'Автор 5'},
-  ];
+final UserTable _UserTable = UserTable();
+final Supabase _supabase = Supabase.instance;
 
-  final List<Map<String, String>> playlists = [
-    {'title': 'Плейлист 1'},
-    {'title': 'Плейлист 2'},
-    {'title': 'Плейлист 3'},
-    {'title': 'Плейлист 4'},
-    {'title': 'Плейлист 5'},
-    {'title': 'Плейлист 6'},
-  ];
+ Track? _currentTrack;
+ 
+  void _playTrack(Track track) {
+    print('Playing track: ${track.title}');
+    setState(() {
+      _currentTrack = track;
+    });
 
-  final List<Map<String, String>> artists = [
-    {'name': 'Исполнитель 1'},
-    {'name': 'Исполнитель 2'},
-    {'name': 'Исполнитель 3'},
-    {'name': 'Исполнитель 4'},
-    {'name': 'Исполнитель 5'},
-  ];
+    PlayerPage.playTrack(
+      context: context,
+      track: track,
+    );
+  }
+
+  Future<void> createPlaylist(String name) async {
+  try {
+    final user = _supabase.client.auth.currentUser;
+    if (user == null) throw Exception('Not authenticated');
+
+    // Получаем максимальный ID
+    final maxId = await _supabase.client
+        .from('List')
+        .select('ID_List')
+        .order('ID_List', ascending: false)
+        .limit(1)
+        .maybeSingle()
+        .then((data) => (data?['ID_List'] as int? ?? 10) + 1);
+
+    // Создаем плейлист
+    await _supabase.client.from('List').insert({
+      'ID_List': maxId,
+      'Name_PlayList': name,
+      'ID_User': user.id, // Используем ID из auth
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Плейлист создан!')),
+      );
+    }
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ошибка: $e')),
+      );
+    }
+  }
+}
+
+Future<void> _showAddPlaylistDialog(BuildContext context) async {
+  final textController = TextEditingController();
+
+  await showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('Новый плейлист'),
+      content: TextField(
+        controller: textController,
+        decoration: InputDecoration(
+          hintText: 'Название плейлиста',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Отмена'),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            if (textController.text.isNotEmpty) {
+              await createPlaylist(textController.text);
+              Navigator.pop(context);
+            }
+          },
+          child: Text('Создать'),
+        ),
+      ],
+    ),
+  );
+}
 
   String searchQuery = '';
-  int currentTrackIndex = 0;
+  // int currentTrackIndex = 0;
   bool isPlaying = true;
-
-  List<Map<String, String>> get filteredTracks => tracks
-      .where((track) =>
-          track['title']!.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          track['author']!.toLowerCase().contains(searchQuery.toLowerCase()))
-      .toList();
-
+  List<Track>? cachedTracks ;  
   @override
   Widget build(BuildContext context) {
     
@@ -61,6 +121,7 @@ final List<Map<String, String>> tracks = [
         
       ),
       body: Container(
+        
         height: double.infinity,
         width: double.infinity,
         decoration: BoxDecoration(
@@ -71,7 +132,7 @@ final List<Map<String, String>> tracks = [
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 80), // Отступ для нижнего плеера
+          padding: const EdgeInsets.only(bottom: 80),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -100,55 +161,122 @@ final List<Map<String, String>> tracks = [
 
               const SizedBox(height: 20),
 
-              // Плейлисты
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Text(
-                  'Ваши плейлисты',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Wrap(
-                  spacing: 15,
-                  runSpacing: 15,
-                  children: playlists.map((playlist) {
-                    return SizedBox(
-                      width: (MediaQuery.of(context).size.width - 50) / 2, // 2 колонки
-                      child: Column(
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(Icons.image, color: Colors.white, size: 40),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            playlist['title']!,
-                            style: const TextStyle(color: Colors.white),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+  Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+  child: Text(
+    'Ваши плейлисты',
+    style: const TextStyle(
+      color: Colors.white,
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+),
+const SizedBox(height: 10),
+FutureBuilder<List<Playlist>>(
+  future: _UserTable.fetchPlaylists(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return SizedBox(
+        height: 130,
+        child: Center(child: CircularProgressIndicator(color: Colors.white)),
+      );
+    }
+    
+    if (snapshot.hasError) {
+      return SizedBox(
+        height: 130,
+        child: Center(
+          child: Text(
+            'Ошибка загрузки',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    }
+    
+    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+      return SizedBox(
+        height: 130,
+        child: Center(
+          child: Text(
+            'Нет плейлистов',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    }
+    
+    final playlists = snapshot.data!;
+
+    return SizedBox(
+      height: 130,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        itemCount: playlists.length,
+        itemBuilder: (context, index) {
+          final playlist = playlists[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Column(
+              children: [
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlaylistPage(
+                          playlistId: playlist.id,
+                          playlistName: playlist.name,
+                        ),
                       ),
                     );
-                  }).toList(),
+                  },
+                  child: Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.queue_music,
+                      color: Colors.white,
+                      size: 40,
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 5),
+                SizedBox(
+                  width: 70,
+                  child: Text(
+                    playlist.name,
+                    style: const TextStyle(color: Colors.white),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  },
+),
+const SizedBox(height: 30),
+FloatingActionButton(
+  onPressed: () => _showAddPlaylistDialog(context),
+  child: Icon(Icons.add),
+  backgroundColor: Colors.blue,
+),
 
               const SizedBox(height: 30),
 
               // Исполнители
-              Padding(
+                        Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Text(
                   'Исполнители',
@@ -160,124 +288,241 @@ final List<Map<String, String>> tracks = [
                 ),
               ),
               const SizedBox(height: 10),
-              SizedBox(
-                height: 130,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  itemCount: artists.length,
-                  itemBuilder: (context, index) {
-                    final artist = artists[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 70,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => AuthorPage()));
-                              },
-                              icon: Icon(
-                                Icons.person,
-                                color: Colors.white,
-                              ),
-                  ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            artist['name']!,
-                            style: const TextStyle(color: Colors.white),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+              FutureBuilder<List<Author>>(
+                future: _UserTable.fetchAuthors(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return SizedBox(
+                      height: 130,
+                      child: Center(child: CircularProgressIndicator(color: Colors.white)),
+                    );
+                  }
+                  
+                  if (snapshot.hasError) {
+                    return SizedBox(
+                      height: 130,
+                      child: Center(
+                        child: Text(
+                          'Ошибка загрузки',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     );
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 30),
-
-              // Список треков
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Text(
-                  'Треки',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: filteredTracks.length,
-                itemBuilder: (context, index) {
-                  final track = filteredTracks[index];
-                  return ListTile(
-                    leading: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(10),
+                  }
+                  
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return SizedBox(
+                      height: 130,
+                      child: Center(
+                        child: Text(
+                          'Нет исполнителей',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
-                      child: const Icon(Icons.music_note, color: Colors.white),
+                    );
+                  }
+                  
+                  final authors = snapshot.data!;
+              
+                  return SizedBox(
+                    height: 130,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      itemCount: authors.length,
+                      itemBuilder: (context, index) {
+                        final author = authors[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: Column(
+                            children: [
+                              
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AuthorPage(),//author: author),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  width: 70,
+                                  height: 70,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(50),
+                                    image: author.imageUrl != null
+                                        ? DecorationImage(
+                                            image: NetworkImage(author.imageUrl!),
+                                            fit: BoxFit.cover,
+                                          )
+                                        : null,
+                                  ),
+                                  child: author.imageUrl == null
+                                      ? Icon(
+                                          Icons.person,
+                                          color: Colors.white,
+                                          size: 30,
+                                        )
+                                      : null,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              // Имя исполнителя
+                              SizedBox(
+                                width: 70,
+                                child: Text(
+                                  author.name,
+                                  style: const TextStyle(color: Colors.white),
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                    title: Text(
-                      track['title']!,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    subtitle: Text(
-                      track['author']!,
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                    //onTap: () => Navigator.push(
-                     // context//,
-                     // MaterialPageRoute(builder: (context) => TracksPage()),
-                   // ),
                   );
                 },
               ),
-            ],
-          ),
-        ),
-      ),
 
-      // Плеер внизу
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListTile(
-          leading: Icon(Icons.music_note),
-          title: Text('----------------------'),
-          subtitle:  Text('Название'),
-          trailing: IconButton(
-            onPressed: () {
-                Navigator.push(context, CupertinoPageRoute(
-                  builder: (context) => PlayerPage(
-                    nameSound: 'Тынларсынмы Яшьлек Хислэремне',
-                    author: 'Гио Пика',
-                    urlMusic: 'https://avlhfundbxtouuguzldi.supabase.co/storage/v1/object/public/storages//Ilkham_SHakirov_-_Tynlarsynmy_YAshlek_KHisljeremne_71715814.mp3',
-                    urlPhoto: 'https://avlhfundbxtouuguzldi.supabase.co/storage/v1/object/public/storages//Ilkham_Shakirov_picture.png',
-                  ),
-                ));
-            },
-            icon: Icon(Icons.play_arrow)
-          ),
+          const SizedBox(height: 30),
+
+              // Список треков
+              // Список треков
+Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+  child: Text(
+    'Треки',
+    style: const TextStyle(
+      color: Colors.white,
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+),
+const SizedBox(height: 10),
+Expanded( // Добавляем Expanded для занимания всего доступного пространства
+  child: FutureBuilder<List<Track>>(
+     future: _UserTable.fetchTracks().then((tracks) {
+     cachedTracks = tracks; // Сохраняем треки при первой загрузке
+     return tracks;
+  }),
+  builder: (context, snapshot) {
+    
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return Center(child: CircularProgressIndicator(color: Colors.white));
+    }
+    
+    if (snapshot.hasError) {
+      return Center(child: Text('Ошибка загрузки', style: TextStyle(color: Colors.white)));
+    }
+    
+    final tracks = snapshot.data ?? [];
+    
+    // Фильтрация прямо здесь
+    final filteredTracks = searchQuery.isEmpty
+        ? tracks
+        : tracks.where((track) => 
+            track.title.toLowerCase().contains(searchQuery.toLowerCase())).toList();
+    
+    if (filteredTracks.isEmpty) {
+      return Center(
+        child: Text(
+          searchQuery.isEmpty ? 'Нет треков' : 'Ничего не найдено',
+          style: TextStyle(color: Colors.white70),
         ),
-      ),
-      drawer: DrawerPage(),
+      );
+    }
       
+      return ListView.builder(
+        // Убираем shrinkWrap: true,
+        // Убираем physics: const NeverScrollableScrollPhysics(),
+        itemCount: filteredTracks.length,
+        itemBuilder: (context, index) {
+          final track = filteredTracks[index];
+          return Card(
+            color: Colors.white.withOpacity(0.1),
+            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ListTile(
+              onTap: () => _playTrack(track),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              leading: track.imageUrl != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        track.imageUrl!,
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          width: 50,
+                          height: 50,
+                          color: Colors.grey[800],
+                          child: Icon(Icons.music_note, color: Colors.white),
+                        ),
+                      ),
+                    )
+                  : Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[800],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(Icons.music_note, color: Colors.white),
+                    ),
+              title: Text(
+                track.title,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: Text(
+                track.authorName ?? 'Неизвестный исполнитель',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: IconButton(
+                            icon: Icon(Icons.play_arrow, color: Colors.white),
+                            onPressed: () => _playTrack(track), // Тот же обработчик
+                          ),
+            ),
+          );
+        },
+      );
+    },
+  ),
+),
+
+          
+            ]
+            
+          )
+          
+          
+          )
+          
+          ),
+          bottomNavigationBar: _currentTrack != null 
+            ? MiniPlayer(
+                key: ValueKey(_currentTrack!.id),
+                initialTrack: _currentTrack,
+              )
+            : null,
+          drawer: DrawerPage(),
+          
     );
   }
 }

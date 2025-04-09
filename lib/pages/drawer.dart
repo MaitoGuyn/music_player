@@ -12,22 +12,22 @@ class DrawerPage extends StatefulWidget {
 }
 
 class _DrawerPageState extends State<DrawerPage> {
-  // AuthServise auth = new AuthServise();
-  // final String user_id = Supabase.instance.client.auth.currentUser!.id.toString();
-  // dynamic docs;
-  // getUserById()async{
-  //   final userGet = await Supabase.instance.client.from('users').select().eq('id', user_id).single();
+  AuthServise auth = new AuthServise();
+  final String user_id = Supabase.instance.client.auth.currentUser!.id.toString();
+  dynamic docs;
+  getUserById()async{
+    final userGet = await Supabase.instance.client.from('users').select().eq('id', user_id).single();
 
-  //   setState(() {
-  //     docs = userGet;
-  //   });
-  // }
+    setState(() {
+      docs = userGet;
+    });
+  }
   @override
 
-  // void initState(){
-  //   getUserById();
-  //   super.initState();
-  // }
+  void initState(){
+    getUserById();
+    super.initState();
+  }
 
   Widget build(BuildContext context) {
     return Drawer(
@@ -43,14 +43,14 @@ class _DrawerPageState extends State<DrawerPage> {
         ),
       child: ListView(
         children: [
-            DrawerHeader(child: UserAccountsDrawerHeader(accountName: Text('name')//docs['name'])
-            , accountEmail: Text(''),//docs['email']),
+            DrawerHeader(child: UserAccountsDrawerHeader(accountName: Text(docs['name'])
+            , accountEmail: Text("Email"),//docs['Email_User']),
             currentAccountPicture: Container(
               alignment: Alignment.topCenter,
               child: CircleAvatar(
                 maxRadius: 20,
                 minRadius: 10,
-                // backgroundImage: NetworkImage(docs['avatar']),
+                //backgroundImage: NetworkImage(docs['avatar']),
               ),
             ),
             otherAccountsPictures: [

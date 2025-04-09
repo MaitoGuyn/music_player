@@ -4,28 +4,46 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class AuthServise{
   final Supabase _supabase = Supabase.instance;
 
-  Future<LocalUser?> signIn( String email , String password)async {
-    try{
-      var userGet = await _supabase.client.auth.signInWithPassword(password: password, email: email);
+  // Future<LocalUser?> signIn( String email , String password)async {
+  //   try{
+  //     var userGet = await _supabase.client.auth.signInWithPassword(password: password, email: email);
 
-      User user = userGet.user!;
-      return LocalUser.fromSupabase(user);
-    }
-    catch(e){
-      return null;
-    }
-  }
+  //     User user = userGet.user!;
+  //     return LocalUser.fromSupabase(user);
+  //   }
+  //   catch(e){
+  //     return null;
+  //   }
+  // }
 
-  Future<LocalUser?> signUp(String email, String password) async {
+  Future<LocalUser?> signIn(String email, String password) async {
   try {
-    var userGet = await _supabase.client.auth.signUp(password: password, email: email);
-    User user = userGet.user!;
-    return LocalUser.fromSupabase(user);
-  } catch (e) {
-    print("Ошибка при регистрации: $e"); // Вывод ошибки в консоль
+    // Прямой запрос к вашей таблице Users
+    final response = await _supabase.client
+        .from('users')
+        .select('id, Email_User, Password_User')
+          .order('Email_User');
+
+    List<LocalUser> users = response.map<LocalUser>((user) => LocalUser.fromMap(user)).toList();
+    return users.firstWhere(
+    (user) => user.email == email && user.Password == password,);
+  } 
+  catch (e) {
+    print('SignIn error: $e');
     return null;
   }
 }
+
+//   Future<LocalUser?> signUp(String email, String password) async {
+//   try {
+//     var userGet = await _supabase.client.auth.signUp(password: password, email: email);
+//     User user = userGet.user!;
+//     return LocalUser.fromSupabase(user);
+//   } catch (e) {
+//     print("Ошибка при регистрации: $e"); // Вывод ошибки в консоль
+//     return null;
+//   }
+// }
 
   Future<void> logOut()async{
     try{

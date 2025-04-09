@@ -98,7 +98,6 @@ class _AuthPageState extends State<AuthPage> {
                     SnackBar(content: Text("Поля пустые", style: TextStyle(color: Colors.black)),
                     backgroundColor: Colors.white,),
                   );
-
                 }
                 else{
                   var user = await authServise.signIn(emailController.text, passController.text);

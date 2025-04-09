@@ -124,36 +124,36 @@ class _RegPageState extends State<RegPage> {
               width: MediaQuery.of(context).size.width * 0.6,
               child: ElevatedButton(onPressed: ()async{
                 //Navigator.push(context,MaterialPageRoute(builder: (context) => TrackListPage()));
-                if(emailController.text.isEmpty || passController.text.isEmpty || RepeatpassController.text.isEmpty){
-                 ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Поля пустые", style: TextStyle(color: Colors.black)),
-                    backgroundColor: Colors.white,));
-                }
-                else{
+                // if(emailController.text.isEmpty || passController.text.isEmpty || RepeatpassController.text.isEmpty){
+                //  ScaffoldMessenger.of(context).showSnackBar(
+                //     SnackBar(content: Text("Поля пустые", style: TextStyle(color: Colors.black)),
+                //     backgroundColor: Colors.white,));
+                // }
+                // else{
                   
-                   if(passController.text == RepeatpassController.text){
-                      var user = await authServise.signUp(emailController.text, passController.text);
-                      if(user!= null){
-                        await _table.addUser(Nick.text, emailController.text, passController.text);
-                        final prefs = await SharedPreferences.getInstance();
-                        await prefs.setBool('isLoggedIn', true);
-                        Navigator.popAndPushNamed(context, '/');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Зерегистрирован: ${user.email!}", style: TextStyle(color: Colors.black)),
-                        backgroundColor: Colors.white));
-                      }else{
-                          ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Не зарегестирован", style: TextStyle(color: Colors.black)),
-                          backgroundColor: Colors.white,),
-                        );
-                      }
-                  }else{
-                    ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Пароли не совпадают", style: TextStyle(color: Colors.black)),
-                    backgroundColor: Colors.white,),
-                  );
-                  }
-                }
+                //    if(passController.text == RepeatpassController.text){
+                //       var user = await authServise.signUp(emailController.text, passController.text);
+                //       if(user!= null){
+                //         await _table.addUser(Nick.text, emailController.text, passController.text);
+                //         final prefs = await SharedPreferences.getInstance();
+                //         await prefs.setBool('isLoggedIn', true);
+                //         Navigator.popAndPushNamed(context, '/');
+                //         ScaffoldMessenger.of(context).showSnackBar(
+                //         SnackBar(content: Text("Зерегистрирован: ${user.email!}", style: TextStyle(color: Colors.black)),
+                //         backgroundColor: Colors.white));
+                //       }else{
+                //           ScaffoldMessenger.of(context).showSnackBar(
+                //           SnackBar(content: Text("Не зарегестирован", style: TextStyle(color: Colors.black)),
+                //           backgroundColor: Colors.white,),
+                //         );
+                //       }
+                //   }else{
+                //     ScaffoldMessenger.of(context).showSnackBar(
+                //     SnackBar(content: Text("Пароли не совпадают", style: TextStyle(color: Colors.black)),
+                //     backgroundColor: Colors.white,),
+                //   );
+                //   }
+                // }
               }, child: Text("Создать аккаунт",
                 style: TextStyle(color: Colors.black)
                 ),
